@@ -1,0 +1,279 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+  html, body { margin:0; background:transparent; overflow:hidden; }
+  * { box-sizing:border-box; }
+
+  :root{
+    --bottom: 120px;
+
+    --design-w: 1500;
+    --design-h: 260;          /* slightly taller because title sits above */
+
+    --page-ms: 6000ms;
+    --fade-ms: 1000ms;
+
+    --icon-h: 160px;
+
+    --carpet-h: 90px;
+    --carpet-radius: 44px;
+    --text-pad: 5px;
+
+    --name-size: 54px;
+    --gold: #D4AF37;
+
+    --join-gap: 10px;
+
+    /* space reserved ABOVE carpet for title */
+    --title-gap: 18px;        /* gap between title and carpet */
+    --title-space: 72px;      /* vertical space allocated for title line */
+  }
+
+  @font-face{
+    font-family: "OverlayFont";
+    src: url("images/Poppins-BlackItalic.ttf") format("truetype");
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  #wrap{
+    position: fixed;
+    left:0; right:0;
+    bottom: var(--bottom);
+    display:flex;
+    justify-content:center;
+    pointer-events:none;
+  }
+
+  #frame{
+    position: relative;
+    width: min(calc(var(--design-w) * 1px), 100vw);
+    height: min(calc(var(--design-h) * 1px), 100vh);
+  }
+
+  #design{
+    position:absolute;
+    left:0;
+    bottom:0;
+    width: calc(var(--design-w) * 1px);
+    height: calc(var(--design-h) * 1px);
+    transform-origin: bottom center;
+    transform: scale(var(--ui-scale, 1));
+  }
+
+  /* Center the whole row in the design */
+  #row{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%, -50%);
+    display:flex;
+    align-items:flex-end; /* heart aligns with carpet baseline */
+    gap: var(--join-gap);
+  }
+
+  #badge{
+    height: var(--icon-h);
+    width: var(--icon-h);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex: 0 0 auto;
+  }
+
+  #icon{
+    height: var(--icon-h);
+    width:auto;
+    display:block;
+  }
+
+  /* Wrapper width == carpet width (set by JS)
+     Padding-top reserves space for title ABOVE carpet. */
+  #carpetWrap{
+    position: relative;
+    width: 900px; /* placeholder; JS sets */
+    padding-top: var(--title-space);
+    flex: 0 0 auto;
+  }
+
+  /* ✅ Title sits in the reserved top area, centered to carpet width */
+  #title{
+    position:absolute;
+    left:50%;
+    top:0;
+    transform: translateX(-50%);
+
+    font-family:"OverlayFont","Segoe UI",Arial,sans-serif;
+    font-weight:900;
+    font-style:italic;
+    font-size: calc(var(--name-size) * 1.05);
+    letter-spacing:3px;
+    text-transform:uppercase;
+    white-space:nowrap;
+
+    color: #7a0f1f;
+    -webkit-text-stroke: 4.5px var(--gold);
+    paint-order: stroke fill;
+    text-shadow:
+      0 0 2px rgba(212,175,55,0.7),
+      0 0 6px rgba(212,175,55,0.35);
+  }
+
+  /* Carpet is pushed down by title space; add a small gap */
+  #carpet{
+    width: 100%;
+    height: var(--carpet-h);
+    margin-top: var(--title-gap);
+    border-radius: var(--carpet-radius);
+
+    background: linear-gradient(180deg,#7a0f1f 0%,#5a0c17 45%,#3d0810 100%);
+    border: 4.5px solid var(--gold);
+    box-shadow: 0 0 22px rgba(120,0,40,.45), 0 0 60px rgba(60,0,20,.35);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 0 var(--text-pad);
+    overflow:hidden;
+  }
+
+  #name{
+    font-family:"OverlayFont","Segoe UI",Arial,sans-serif;
+    font-weight:900;
+    font-style:italic;
+    font-size: var(--name-size);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    white-space:nowrap;
+    transition: opacity var(--fade-ms) linear;
+
+    /* metallic gold */
+    background: linear-gradient(
+      180deg,
+      #fff6c9 0%,
+      #f7d46a 35%,
+      #d4af37 55%,
+      #b88917 75%,
+      #fff1b8 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow:
+      0 0 6px rgba(255, 210, 120, 0.35),
+      0 0 18px rgba(212,175,55,0.25);
+  }
+
+  #name.fade-out{ opacity:0; }
+
+  #measure{
+    position:absolute;
+    left:-99999px;
+    visibility:hidden;
+    white-space:nowrap;
+    font-family:"OverlayFont","Segoe UI",Arial,sans-serif;
+    font-weight:900;
+    font-style:italic;
+    font-size: var(--name-size);
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+</style>
+</head>
+
+<body>
+<div id="wrap">
+  <div id="frame">
+    <div id="design">
+
+      <div id="row">
+        <div id="badge">
+          <img id="icon" alt="honour icon">
+        </div>
+
+        <div id="carpetWrap">
+          <div id="title">GUESTS OF HONOUR</div>
+          <div id="carpet">
+            <div id="name">SURPRISE ME</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="measure"></div>
+
+<script>
+const PAGE_MS = 6000;
+const FADE_MS = 1000;
+
+const names = [
+  "SURPRISE ME","GABO_JABO","RENI","PASTI PRESTIJ","KALOYAN YORDANOV",
+  "GEORGI GEORGIEV","BANISHORA","STAMEN","DERMENDJIEV9999",
+  "VELISLAV STOYANOV","FITNESS MANIQK","MOHTA","SOL BADGUY","VESHTICATA",
+  "NIKOLA_NENOV","GSTYLE","ARIA_032","ZORINKA","PRESKO","INCRATE",
+  "NIKOLA TASHEV","ANDONEEE","ALEKSPASHOV0"
+];
+
+const nameEl = document.getElementById("name");
+const meas = document.getElementById("measure");
+const carpetWrap = document.getElementById("carpetWrap");
+const icon = document.getElementById("icon");
+
+function measureWidth(text){
+  meas.textContent = text;
+  return Math.ceil(meas.getBoundingClientRect().width);
+}
+
+// Carpet width = longest name + 10px (5 left, 5 right)
+function setCarpetWidth(){
+  let max = 0;
+  for (const n of names) max = Math.max(max, measureWidth(n));
+  carpetWrap.style.width = (max + 10) + "px";
+}
+
+function setIconWithFallback(){
+  const paths = ["images/honour.png", "honour.png"];
+  let i = 0;
+  function tryNext(){
+    if (i >= paths.length) return;
+    icon.onerror = () => { i++; tryNext(); };
+    icon.src = paths[i];
+  }
+  tryNext();
+}
+
+let idx = 0;
+
+async function cycle(){
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch(e){}
+  }
+
+  setIconWithFallback();
+  setCarpetWidth();
+
+  while(true){
+    nameEl.classList.remove("fade-out");
+    nameEl.textContent = names[idx];
+
+    await new Promise(r => setTimeout(r, PAGE_MS));
+
+    nameEl.classList.add("fade-out");
+    await new Promise(r => setTimeout(r, FADE_MS));
+
+    idx = (idx + 1) % names.length;
+  }
+}
+
+cycle();
+</script>
+</body>
+</html>
